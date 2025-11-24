@@ -1,6 +1,6 @@
 /*
- * NeutralFin v1.1.0
- * Modified version of ElegantFin Theme v25.10.27
+ * NeutralFin v1.3.0
+ * Modified version of ElegantFin Theme v25.11.25
  * Original author: lscambo13
  * Modified by: KartoffelChipss
  * License: GNU GPL-2.0
@@ -9,6 +9,7 @@
  * - Grey color scheme applied
  * - Fix media bar plugin container position
  * - Fix media bar buttons consistency
+ * - Fixed media bar age rating tag color
  * - Minor visual tweaks
  */
 
@@ -16,7 +17,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 :root {
-    --elegantFinFooterText: 'NeutralFin 1.2.0 based on ElegantFin 25.10.27';
+    --elegantFinFooterText: 'NeutralFin 1.3.0 based on ElegantFin 25.11.25';
 
     /* Base theme colors */
     color-scheme: dark;
@@ -150,12 +151,23 @@
 
     --appBarHeight: 5em;
     --backdropPositionY: 50%;
+
+    --gradientPointAlpha: rgba(29, 38, 53, 0.3);
+
+    --minEpisodeCardWidth: 26em;
+
+    --itemOriginalTitleVisibility: block;
+    --clearLogoVisibility: block;
+    --itemTitleVisibility: none;
+    --miniOverlayButtonVisibility: block;
+
+    --backdropTrimFromTop: 10%;
 }
 
 /* Fix media bar container position */
 #slides-container {
     margin-top: calc(var(--appBarHeight) * -1);
-    height: 100%;
+    height: calc(100% + var(--appBarHeight));
 }
 
 /* Fix media bar buttons  */
@@ -169,7 +181,9 @@
     margin-right: 0 !important;
 }
 .favorite-button {
-    color: inherit;
+    margin: 0 !important;
+    background: buttonface !important;
+    color: inherit !important;
 }
 .favorite-button.favorited {
     color: red;
@@ -181,11 +195,22 @@
 }
 
 html {
-    font-family: 'Inter', serif;
+    font-family: 'Inter', sans-serif;
     font-optical-sizing: auto;
     font-weight: 425;
     font-style: normal;
     -webkit-tap-highlight-color: transparent !important;
+}
+
+body {
+    --primaryItemPageNegativeSpace: 14vh;
+    --secondaryItemPageNegativeSpace: 60vh;
+    --clearLogoBottomSpace: 11em;
+}
+
+.layout-desktop > body:has(> audio[src]) {
+    --primaryItemPageNegativeSpace: calc(14vh + 5em);
+    --secondaryItemPageNegativeSpace: calc(60vh + 5em);
 }
 
 .layout-mobile {
@@ -193,6 +218,10 @@ html {
     --headerColorGradient: var(--headerColorGradientAlt);
     --blurLargest: blur(12px);
     --headerBlurMask: linear-gradient(180deg, white 60%, 90%, transparent);
+}
+
+.layout-mobile > body {
+    --secondaryItemPageNegativeSpace: 45vh;
 }
 
 /* Material Icons Round */
@@ -207,7 +236,7 @@ html {
 }
 
 .material-icons {
-    font-family: var(--iconPack);
+    font-family: var(--iconPack) !important;
     font-weight: normal;
     font-style: normal;
     display: inline-block;
@@ -231,7 +260,12 @@ html {
 }
 
 .material-icons.info_outline:before {
-    font-family: Material Icons;
+    content: '\e88e';
+    font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 48;
 }
 
 .dashboardFooter {
@@ -245,6 +279,7 @@ html {
     font-size: 0.8em;
     color: var(--borderColor);
     display: inline-grid;
+    width: 100%;
     width: -webkit-fill-available;
     justify-content: center;
     font-weight: 600;
@@ -411,7 +446,7 @@ html {
     background: rgba(255, 255, 255, 0.05);
 }
 
-.card-hoverable .cardOverlayContainer:after {
+.cardOverlayContainer:after {
     content: var(--cardHoverEffect);
     transition: 0.5s;
     position: absolute;
@@ -497,6 +532,7 @@ html {
 [dir='ltr'] .layout-mobile .cardOverlayButton-br {
     bottom: 0.25em;
     right: 0.25em;
+    display: var(--miniOverlayButtonVisibility);
 }
 
 .layout-mobile .portraitCard .cardOverlayButton-br:not([data-action='menu']),
@@ -512,7 +548,7 @@ html {
     color: white;
 }
 
-.cardOverlayContainer:has(.cardOverlayButton:hover) {
+.cardOverlayContainer:has(> button:hover) {
     backdrop-filter: var(--blurDefault);
 }
 
@@ -525,10 +561,61 @@ html {
     font-size: x-small;
 }
 
-.listItem-largeImage[data-type='Episode'] .listViewUserDataButtons {
-    flex-direction: column;
-    font-size: small;
+/* episode grid start */
+
+@supports (display: revert) {
+    .vertical-list:has(.listItem-largeImage) {
+        display: grid;
+        grid-template-columns: repeat(
+            auto-fill,
+            minmax(min(var(--minEpisodeCardWidth), 100%), 1fr)
+        );
+        gap: var(--itemColumnGap);
+    }
+
+    .layout-desktop .listItem-largeImage {
+        display: grid;
+        margin-bottom: 0 !important;
+    }
+
+    .layout-desktop .listItem-largeImage > .listItem-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr 2em;
+        order: 1;
+        height: 100%;
+        align-items: start;
+    }
+
+    .layout-desktop .listItem-largeImage > .listItem-bottomoverview {
+        order: 2;
+    }
+
+    .layout-desktop .listItem-largeImage .listItemImage-large {
+        order: 1;
+        grid-column: 1 / -1;
+        height: max-content;
+        min-height: 15em;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        box-sizing: border-box;
+    }
+
+    .layout-desktop .listItem-largeImage .listItemBody {
+        order: 2;
+        grid-column: 1 / 3;
+        padding: 1em 0.125em;
+    }
+
+    .layout-desktop .listItem-largeImage .listViewUserDataButtons {
+        flex-direction: column;
+        font-size: small;
+        order: 2;
+        grid-column: 3;
+        align-self: center;
+    }
 }
+
+/* episode grid end */
 
 .portraitCard {
     min-width: 5em;
@@ -918,7 +1005,7 @@ html {
 .layout-desktop .detailPageWrapperContainer {
     background: transparent;
     min-height: 46vh;
-    background: linear-gradient(0deg, var(--darkerGradientPointAlpha) 70%, 85%, transparent);
+    background: linear-gradient(180deg, transparent, 17vh, var(--darkerGradientPointAlpha) 50vh);
 }
 
 .layout-tv .detailPageWrapperContainer {
@@ -960,10 +1047,10 @@ html {
     background-color: transparent;
 }
 
-/* this removes the extra large left paading on 10.11.0 */
+/* this removes the extra large left padding on 10.11.0 */
 .detailPagePrimaryContainer>.detailPagePrimaryContent,
 [dir=ltr] .detailPagePrimaryContainer>.detailRibbon,
-/* this removes the extra large left paading on pre-10.11.0 */
+/* this removes the extra large left padding on pre-10.11.0 */
 [dir=ltr] .detailPagePrimaryContainer.detailRibbon {
     padding-left: var(--sidePadding);
 }
@@ -1024,6 +1111,7 @@ html {
     margin: 0 calc(-1 * var(--sidePadding));
     padding: 0 var(--sidePadding);
     padding-left: calc(var(--sidePadding) - 0.375em);
+    /* mask-image: linear-gradient(90deg, transparent, white var(--sidePadding), white calc(100vw - var(--sidePadding)), transparent); */
 }
 
 .layout-desktop .emby-scroller-container,
@@ -1054,6 +1142,11 @@ html {
 .layout-mobile :not(.sectionTitleContainer-cards) > .sectionTitle-cards {
     text-align: left;
     margin: 0.75em 0 -0.75em 0;
+}
+
+.emby-scrollbuttons,
+[dir='ltr'] .emby-scrollbuttons {
+    padding-top: 1.25em;
 }
 
 .sectionTitleContainer + .emby-scrollbuttons {
@@ -1088,6 +1181,7 @@ html {
     transform: translateY(-0.15em);
     font-weight: 600;
     border: var(--defaultBorder);
+    color: var(--textColor);
 }
 
 .starIcon {
@@ -1107,16 +1201,16 @@ html {
     content: '%';
 }
 
-.layout-desktop .detailRibbon {
-    height: 28vh;
-    margin-top: unset;
+.detailRibbon:has(.portraitCard .folder) {
+    min-height: 32vh;
+    align-content: flex-end;
 }
 
-/* test disabled for 10.11.0 */
-/* .layout-desktop [dir=ltr] .detailPagePrimaryContainer,
-.layout-tv [dir=ltr] .detailPagePrimaryContainer {
-    padding-left: var(--sidePadding);
-} */
+.layout-desktop .detailRibbon {
+    height: 100%;
+    min-height: 25vh;
+    margin-top: unset;
+}
 
 @keyframes animMoveDown {
     from {
@@ -1154,33 +1248,6 @@ html {
     }
 }
 
-.detailLogo {
-    display: block;
-    top: calc(100vh - 11em - var(--primaryItemPageNegativeSpace));
-    left: 0;
-    width: 40%;
-    transform: translateY(-100%);
-    margin: auto 30%;
-    height: 25vh;
-    background-position: bottom;
-}
-
-.layout-mobile .detailLogo {
-    display: block;
-    z-index: 1;
-    position: absolute;
-    left: 1em;
-    top: 45vh;
-    margin: auto 0%;
-    width: calc(100vw - 2em);
-    max-height: 17vh;
-    animation: animMoveUp 1s ease-out forwards;
-}
-
-.itemBackdrop {
-    display: block !important;
-}
-
 /* Theme video styling rolled back because jellyfin does not differentiate between the main video player and theme video playback nicely*/
 /* .videoPlayerContainer {
     position: relative !important;
@@ -1199,8 +1266,12 @@ html {
     object-fit: cover;
 } */
 
+.itemBackdrop {
+    display: block !important;
+}
+
 .layout-desktop .itemBackdrop {
-    height: calc(100vh - 32vh - var(--primaryItemPageNegativeSpace)) !important;
+    height: calc(100vh - 27vh - var(--primaryItemPageNegativeSpace));
 }
 
 .layout-mobile .itemBackdrop {
@@ -1213,12 +1284,49 @@ html {
     height: 45vh;
 }
 
-.layout-mobile #itemDetailPage:has(.detailLogo.hide) .itemBackdrop {
-    margin-bottom: -10vh;
+.layout-tv .itemBackdrop {
+    height: 33vh;
+}
+
+#itemDetailPage:has(.subtitle) .itemBackdrop,
+#itemDetailPage:has(.musicParentName) .itemBackdrop,
+#itemDetailPage:has(.detailImageContainer .backdropCard) .itemBackdrop,
+#itemDetailPage:has(.detailImageContainer .person) .itemBackdrop,
+#itemDetailPage:has(.detailImageContainer .queue) .itemBackdrop,
+#itemDetailPage:has(.detailImageContainer .book) .itemBackdrop,
+#itemDetailPage:has(.detailImageContainer .live_tv) .itemBackdrop {
+    height: calc(100vh - 27vh - var(--secondaryItemPageNegativeSpace));
+}
+
+#itemDetailPage:has(.detailImageContainer .cardPadder-square:not(.person)) .itemBackdrop {
+    height: calc(100vh - 20vh - var(--secondaryItemPageNegativeSpace));
+}
+
+.detailLogo {
+    display: var(--clearLogoVisibility);
+    top: calc(100vh - var(--clearLogoBottomSpace) - var(--primaryItemPageNegativeSpace));
+    left: 0;
+    width: 40%;
+    transform: translateY(-100%);
+    margin: auto 30%;
+    height: 25vh;
+    background-position: bottom;
+}
+
+.layout-mobile .detailLogo {
+    display: var(--clearLogoVisibility);
+    z-index: 1;
+    position: absolute;
+    left: 1em;
+    top: 45vh;
+    margin: auto 0%;
+    width: calc(100vw - 2em);
+    max-height: 17vh;
+    animation: animMoveUp 1s ease-out forwards;
 }
 
 .layout-tv .detailLogo {
-    display: block;
+    display: var(--clearLogoVisibility);
     height: 20vh;
     top: 39vh;
     left: 30vw;
@@ -1226,22 +1334,16 @@ html {
     margin: auto 5vw;
 }
 
-.layout-tv .itemBackdrop {
-    height: 33vh;
+#itemDetailPage:has(.subtitle) .detailLogo {
+    top: calc(100vh - 6em - var(--secondaryItemPageNegativeSpace));
 }
 
-/* .detailImageContainer.padded-left {
-    padding-left: 0;
-} */
-
-/* .layout-tv .detailImageContainer .card {
-    padding-left: var(--sidePadding);
-
-    position: fixed;
-} */
+.layout-mobile #itemDetailPage:has(.subtitle) .detailLogo {
+    top: calc(100vh - 11em - var(--secondaryItemPageNegativeSpace));
+}
 
 .layout-desktop .detailImageContainer .card {
-    position: absolute !important;
+    position: relative !important;
     width: 22vh !important;
     float: none;
     left: 0 !important;
@@ -1250,12 +1352,6 @@ html {
     margin: auto;
     margin-bottom: 0;
     place-self: center;
-    transform: translateY(-80%);
-}
-
-.layout-desktop .detailImageContainer .backdropCard,
-.layout-desktop .detailImageContainer .squareCard {
-    transform: translateY(-100%);
 }
 
 .detailImageContainer .card.backdropCard {
@@ -1321,14 +1417,18 @@ html {
     margin-top: 0.5em;
 }
 
-/* this hides the main media title when the clear logo is available*/
-.detailLogo:not(.hide) ~ .detailPageWrapperContainer .nameContainer h1,
-#itemDetailPage:has(.detailImageContainer .card.backdropCard) .detailLogo,
-#itemDetailPage:has(.detailImageContainer .cardImageIcon.album) .detailLogo,
-#itemDetailPage:has(.detailImageContainer .cardImageIcon.person) .detailLogo,
-.detailImageContainer .card:not(.portraitCard):has(.cardImageIcon.person) {
+/* this hides the detail logo  when media card is visible */
+#itemDetailPage:has(.detailImageContainer .backdropCard) .detailLogo,
+#itemDetailPage:has(.detailImageContainer .album) .detailLogo,
+#itemDetailPage:has(.detailImageContainer .person) .detailLogo {
     z-index: 2;
     display: none;
+}
+
+/* this hides the main media title when the clear logo is available*/
+.detailLogo:not(.hide) ~ .detailPageWrapperContainer .nameContainer h1 {
+    z-index: 2;
+    display: var(--itemTitleVisibility);
 }
 
 /* this shows the main media title and the poster when the clear logo is unavailable*/
@@ -1349,41 +1449,38 @@ html {
     aspect-ratio: 1 / 1;
 }
 
-#childrenContent:has(.listItem[data-type='Audio']) {
+#childrenContent:has(.listItem[data-type='Audio']),
+.programGuideSection {
     border: var(--defaultBorder);
     border-radius: var(--largeRadius);
     padding: 0.5em;
     background-color: var(--lighterGradientPointAlpha);
 }
 
-/* this shows the poster in the cast, book and music pages */
-.detailImageContainer .card:has(.book, .person, .album),
-.detailImageContainer .card.backdropCard:has(.tv),
-.detailImageContainer .card.backdropCard:has(.movie),
-.detailImageContainer .card.backdropCard:has(.live_tv) {
+/* this shows the poster in the cast, book, live tv and other pages */
+.detailImageContainer > .backdropCard,
+.detailImageContainer > .squareCard,
+.detailImageContainer > .card:has(.book),
+.detailImageContainer > .card:has(.person),
+.detailImageContainer > .card:has(.album),
+.detailImageContainer > .card:has(.queue),
+.detailImageContainer > .card:has(.live_tv) {
     display: block;
 }
 
-/* This reduces the top padding in the cast, live tv, episode, song, album and artist pages i.e. shifts up page content */
-#itemDetailPage:has(
-        .detailImageContainer .cardImageIcon.person,
-        .detailImageContainer .cardImageIcon.book
-    )
-    .itemBackdrop,
-#itemDetailPage:has(.detailImageContainer .cardImageIcon.album) .itemBackdrop,
-#itemDetailPage:has(.detailImageContainer .backdropCard .cardImageIcon.tv) .itemBackdrop,
-#itemDetailPage:has(.detailImageContainer .squareCard) .itemBackdrop,
-#itemDetailPage:has(.detailImageContainer .cardImageIcon.live_tv) .itemBackdrop {
-    height: calc(100vh - 32vh - var(--secondaryItemPageNegativeSpace)) !important;
+/* this hides artist's poster */
+.detailImageContainer .squareCard:has(.person) {
+    display: none;
 }
 
-#itemDetailPage:has(.detailImageContainer .card.backdropCard),
-#itemDetailPage:has(.detailImageContainer .card .cardImageIcon.album) {
+#itemDetailPage:has(.subtitle),
+#itemDetailPage:has(.musicParentName) {
     background: linear-gradient(180deg, var(--darkerGradientPointAlpha) 80%, transparent);
 }
 
-.layout-mobile #itemDetailPage:has(.detailImageContainer .card.backdropCard) .itemBackdrop,
-.layout-mobile #itemDetailPage:has(.detailImageContainer .card .cardImageIcon.album) .itemBackdrop {
+.layout-mobile #itemDetailPage:has(.detailImageContainer .backdropCard) .itemBackdrop,
+.layout-mobile #itemDetailPage:has(.subtitle) .itemBackdrop,
+.layout-mobile #itemDetailPage:has(.musicParentName) .itemBackdrop {
     animation: animMoveDownSecondaryPage 0.5s ease-out forwards;
 }
 
@@ -1453,7 +1550,7 @@ html,
 }
 
 .backdropImage {
-    background-position-y: var(--backdropPositionY);
+    background-position-y: clamp(0%, calc(var(--backdropTrimFromTop) * 5), 100%);
 }
 
 .backdropImage:after,
@@ -1784,46 +1881,6 @@ progress + span {
     flex-direction: column-reverse;
 }
 
-.itemDetailsGroup {
-    outline: none;
-    overflow: hidden;
-    margin-top: 1em;
-    border-radius: var(--smallRadius);
-    background-color: var(--lighterGradientPointAlpha);
-    border: none;
-    box-shadow: inset 0 0 0 0.06em var(--borderColor) !important;
-}
-
-.detailsGroupItem {
-    margin: 0 !important;
-    justify-content: space-between;
-    padding: 0.5em 0.9em;
-    align-items: baseline;
-}
-
-.detailsGroupItem:not(:last-child) {
-    border-bottom: var(--defaultBorder);
-}
-
-.detailsGroupItem > .label {
-    font-weight: 600;
-    flex-basis: 6em;
-}
-
-.detailsGroupItem > .content > a {
-    font-weight: 400;
-    text-align: end;
-}
-
-.detailsGroupItem > .content {
-    text-align: end;
-    color: var(--dimTextColor);
-}
-
-.detailsGroupItem > .label {
-    color: var(--textColor);
-}
-
 .itemExternalLinks {
     color: var(--textColor);
 }
@@ -1964,14 +2021,19 @@ progress + span {
 }
 
 .innerCardFooter,
+.chapterCardImageContainer {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.innerCardFooter,
 .chapterThumbTextContainer {
     background: var(--cardFooterGradient);
     text-shadow: 0.1em 0.1em 0px black;
-    width: -webkit-fill-available;
-    height: -webkit-fill-available;
     padding: 0em 2em 2em 2em;
     align-content: end;
     display: grid;
+    height: 100%;
 }
 
 .chapterCardImageContainer {
@@ -2186,10 +2248,6 @@ progress + span {
     }
 }
 
-.layout-tv .emby-checkbox:focus + span + .checkboxOutline {
-    transform: scale(1.75);
-}
-
 .cardIndicators {
     -webkit-align-items: center;
     align-items: center;
@@ -2360,7 +2418,7 @@ div[data-type='PhotoAlbum'] .play_arrow:before {
     flex-direction: row;
 }
 
-.btnPlay:after {
+.btnPlay:not(.formDialogFooterItem):not(.play-button):after {
     content: attr(title);
     padding: 0 1ch;
 }
@@ -2540,11 +2598,19 @@ div[data-role='controlgroup'] a.ui-btn-active {
     background-color: rgba(255, 255, 255, 0.07);
 }
 
-[dir='ltr']
-    .listItem:not(.actionSheetMenuItem)[data-type='Episode']
-    .listItemBodyText:not(.secondary) {
+/* [dir="ltr"] .listItem:not(.actionSheetMenuItem)[data-type="Episode"] .listItemBodyText:not(.secondary) {
     font-size: 1.17em;
     font-weight: 600;
+} */
+
+.listItem-largeImage .listItemBodyText:not(.secondary) {
+    font-size: 1.17em;
+    font-weight: 600;
+    color: var(--textColor);
+}
+
+.listItemBodyText.secondary {
+    color: var(--dimTextColor);
 }
 
 .listItemBody > .listItemBodyText:not(.secondary) {
@@ -2673,7 +2739,8 @@ div[data-role='controlgroup'] a.ui-btn-active {
     row-gap: 1em;
     column-gap: 3em;
     max-width: unset !important;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 25% 1fr 1fr 1fr;
+    margin-bottom: 1.5em;
 }
 
 .layout-mobile .detailSection {
@@ -2695,12 +2762,20 @@ div[data-role='controlgroup'] a.ui-btn-active {
     background-color: var(--lighterGradientPointAlpha);
 }
 
+.layout-mobile .trackSelections {
+    margin-top: 0;
+}
+
 .layout-tv .trackSelections {
     order: 2;
 }
 
 .recordingFields {
     order: 4;
+}
+
+.recordingButton {
+    gap: 1ch;
 }
 
 .detailsGroupItem,
@@ -2741,31 +2816,68 @@ div[data-role='controlgroup'] a.ui-btn-active {
     background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path fill="%23d1d5db" d="m15.4 4.05-.5.56.5-.56Zm3.95 3.57-.5.55.5-.55Zm2.3 2.53-.68.3.68-.3ZM3.17 20.83l.53-.53-.53.53Zm17.66 0-.53-.53.53.53Zm-6.83.42h-4v1.5h4v-1.5ZM2.75 14v-4h-1.5v4h1.5Zm18.5-.44V14h1.5v-.44h-1.5Zm-6.36-8.95 3.96 3.56 1-1.11L15.9 3.5l-1 1.11Zm7.86 8.95c0-1.69.02-2.75-.41-3.71l-1.37.6c.26.6.28 1.3.28 3.11h1.5Zm-3.9-5.39c1.35 1.22 1.85 1.7 2.12 2.29l1.37-.61c-.43-.96-1.23-1.66-2.49-2.8l-1 1.12Zm-8.82-5.42c1.58 0 2.18.01 2.71.22l.54-1.4c-.85-.33-1.78-.32-3.25-.32v1.5Zm5.86.75c-1.08-.98-1.76-1.6-2.61-1.93l-.54 1.4c.53.2.98.59 2.15 1.64l1-1.11ZM10 21.25c-1.9 0-3.26 0-4.29-.14-1-.13-1.58-.39-2-.81l-1.07 1.06c.75.75 1.7 1.08 2.87 1.24 1.15.15 2.63.15 4.49.15v-1.5ZM1.25 14c0 1.86 0 3.34.15 4.49a4.71 4.71 0 0 0 1.24 2.87L3.7 20.3c-.42-.43-.67-1-.81-2.01A36 36 0 0 1 2.75 14h-1.5ZM14 22.75c1.86 0 3.34 0 4.49-.15a4.71 4.71 0 0 0 2.87-1.24L20.3 20.3c-.43.42-1 .68-2.01.81-1.03.14-2.38.14-4.29.14v1.5ZM21.25 14c0 1.9 0 3.26-.14 4.29-.13 1-.39 1.58-.81 2l1.06 1.07a4.71 4.71 0 0 0 1.24-2.87c.15-1.15.15-2.63.15-4.49h-1.5Zm-18.5-4c0-1.9 0-3.26.14-4.29.14-1 .39-1.58.81-2L2.64 2.63A4.71 4.71 0 0 0 1.4 5.51c-.15 1.15-.15 2.63-.15 4.49h1.5Zm7.28-8.75c-1.87 0-3.36 0-4.51.15a4.72 4.72 0 0 0-2.88 1.24L3.7 3.7c.42-.42 1-.67 2.02-.81 1.03-.14 2.4-.14 4.31-.14v-1.5Z"/><path stroke="%23d1d5db" stroke-width="1.5" d="M13 2.5V5c0 2.36 0 3.54.73 4.27.73.73 1.91.73 4.27.73h4"/></svg>');
 }
 
-.detailSectionContent {
-    order: 1;
-    grid-column: 1 / -1;
-}
-
 .detailSectionContent a:not(.overview-expand) {
     text-align: start;
 }
 
 .layout-desktop .detailSectionContent {
+    display: grid;
     align-content: end;
-    min-height: 15vh;
+    min-height: 16vh;
+}
+
+.detailSectionContent:has(.tagline.hide + .overview.hide) {
+    min-height: unset;
 }
 
 .itemDetailsGroup {
+    outline: none;
+    overflow: hidden;
+    margin-top: 1em;
+    border-radius: var(--smallRadius);
+    background-color: var(--lighterGradientPointAlpha);
+    border: none;
+    box-shadow: inset 0 0 0 0.06em var(--borderColor) !important;
     order: 2;
     grid-column: 1 / 3;
 }
 
-.layout-tv .itemDetailsGroup {
-    order: 2;
+.layout-mobile .itemDetailsGroup {
+    margin-top: 0;
 }
 
-.trackSelections.hide ~ .recordingFields.hide ~ .itemDetailsGroup {
-    grid-column: 1 / -1;
+.detailsGroupItem {
+    margin: 0 !important;
+    justify-content: space-between;
+    padding: 0.5em 0.9em;
+    align-items: baseline;
+}
+
+.detailsGroupItem:not(:last-child) {
+    border-bottom: var(--defaultBorder);
+}
+
+.detailsGroupItem > .label {
+    font-weight: 600;
+    flex-basis: 6em;
+}
+
+.detailsGroupItem > .content > a {
+    font-weight: 400;
+    text-align: end;
+}
+
+.detailsGroupItem > .content {
+    text-align: end;
+    color: var(--dimTextColor);
+}
+
+.detailsGroupItem > .label {
+    color: var(--textColor);
+}
+
+.layout-tv .itemDetailsGroup {
+    order: 2;
 }
 
 .detailSection > .nextUpSection {
@@ -2778,7 +2890,13 @@ div[data-role='controlgroup'] a.ui-btn-active {
     grid-column: 2 / -1;
 }
 
-.nextUpSection.hide ~ #listChildrenCollapsible {
+.detailSectionContent {
+    order: 1;
+    grid-column: 1 / -1;
+}
+
+.nextUpSection.hide ~ #listChildrenCollapsible,
+.trackSelections.hide ~ .recordingFields.hide ~ .itemDetailsGroup {
     grid-column: 1 / -1;
 }
 
@@ -2791,8 +2909,27 @@ div[data-role='controlgroup'] a.ui-btn-active {
 .layout-tv .detailSectionContent,
 .layout-tv .itemDetailsGroup,
 .layout-tv .nextUpSection,
-.layout-tv .detailSection > #listChildrenCollapsible {
+.layout-tv .detailSection > #listChildrenCollapsible,
+.collectionItems,
+.programGuideSection {
     grid-column: 1 / -1;
+}
+
+.programGuideSection:not(.hide) {
+    order: -1;
+    margin-top: 2em;
+}
+
+.layout-desktop .programGuide {
+    padding-right: var(--sidePadding);
+}
+
+.collectionItems .sectionTitleContainer.padded-left {
+    padding-left: 0.375em;
+}
+
+.collectionItemsContainer.padded-left {
+    padding-left: 0;
 }
 
 .sliderBubble {
@@ -2833,9 +2970,9 @@ div[data-role='controlgroup'] a.ui-btn-active {
     padding-right: var(--sidePadding) !important;
 }
 
-.paddded-left {
+/* .padded-left {
     padding-left: var(--sidePadding) !important;
-}
+} */
 
 .layout-mobile .padded-right-withalphapicker {
     padding-left: 4.5%;
@@ -2981,6 +3118,7 @@ div[data-role='controlgroup'] a.ui-btn-active {
     background-color: whitesmoke;
     box-shadow: var(--shadow);
     margin-right: var(--sidePadding);
+    color: black;
 }
 
 /* this allows the skip button get focused correctly on TVs using remote navigation; needs 10.10.7*/
@@ -3158,44 +3296,61 @@ div[data-role='controlgroup'] a.ui-btn-active {
     flex-direction: row-reverse;
 }
 
-.infoWrapper h1.itemName,
-.infoWrapper h1.parentName {
+.nameContainer > h3,
+.nameContainer > h1 {
+    word-break: break-word;
+    overflow: hidden;
+}
+
+.nameContainer > h1.itemName,
+.nameContainer > h1.parentName {
     font-size: 4em;
     white-space: pre-wrap;
     padding-bottom: 0.5ch;
     color: white;
 }
 
-.infoWrapper h1.itemName,
-.infoWrapper h1.parentName,
-.infoWrapper h1.itemName a,
-.infoWrapper h1.parentName a {
+.nameContainer > h1.itemName,
+.nameContainer > h1.parentName,
+.nameContainer > h1.itemName a,
+.nameContainer > h1.parentName a {
     font-weight: 200;
 }
 
-.infoWrapper h1.itemName bdi,
-.infoWrapper h1.parentName bdi,
-.infoWrapper h1.itemName a,
-.infoWrapper h1.parentName a {
-    /* overflow: hidden; */
+.nameContainer > h1.itemName bdi,
+.nameContainer > h1.parentName bdi,
+.nameContainer > h1.itemName a,
+.nameContainer > h1.parentName a {
+    overflow: hidden;
     display: -webkit-box !important;
     -webkit-line-clamp: 3;
     line-clamp: 3;
     -webkit-box-orient: vertical;
 }
 
-.layout-mobile .infoWrapper h1.itemName,
-.layout-mobile .infoWrapper h1.parentName,
-.layout-mobile .infoWrapper h1.parentNameLast {
+.layout-mobile .nameContainer > h1.itemName,
+.layout-mobile .nameContainer > h1.parentName,
+.layout-mobile .nameContainer > h1.parentNameLast {
     font-size: 2em;
     word-wrap: break-word;
     padding-bottom: 0ch;
+}
+
+.subtitle {
+    font-size: 2em;
+    padding-bottom: 1em;
+}
+
+.layout-mobile .subtitle {
+    font-size: 1.5em;
+    padding-bottom: 0.5em;
 }
 
 .itemName.originalTitle {
     padding-top: 0.25em;
     padding-bottom: 0.25em;
     color: var(--dimTextColor);
+    display: var(--itemOriginalTitleVisibility);
 }
 
 .channelPrograms + .channelPrograms,
@@ -3214,7 +3369,7 @@ div[data-role='controlgroup'] a.ui-btn-active {
 
 .guideProgramName {
     background-color: rgba(255, 255, 255, 0.05);
-    height: -webkit-fill-available;
+    height: calc(100% - 0.7em);
     margin: 0.35em 0 0.35em 0.7em;
     border-radius: var(--smallerRadius);
 }
@@ -3458,12 +3613,23 @@ ul.MuiList-root.MuiMenu-list.MuiList-dense > div:first-child {
     background: var(--activeColor);
 }
 
-#homeTab .overflowBackdropCard[data-isfolder='true'] .cardPadder-overflowBackdrop {
+/* this :not() is needed to prevent affecting the mixed media libraries on the home page */
+/* #homeTab .overflowBackdropCard[data-isfolder="true"]:not(.groupedCard) .cardPadder-overflowBackdrop {
     padding-bottom: 50%;
 }
 
-#homeTab .overflowBackdropCard[data-isfolder='true'] .cardText-first,
-#homeTab .overflowBackdropCard[data-isfolder='true'] .cardText.cardTextCentered {
+#homeTab .overflowBackdropCard[data-isfolder="true"]:not(.groupedCard) .cardText-first,
+#homeTab .overflowBackdropCard[data-isfolder="true"]:not(.groupedCard) .cardText.cardTextCentered {
+    display: var(--libraryLabelVisibility);
+} */
+
+.overflowBackdropCard[data-type='CollectionFolder'] .cardPadder-overflowBackdrop,
+.overflowBackdropCard[data-type='UserView'] .cardPadder-overflowBackdrop {
+    padding-bottom: 50%;
+}
+
+.overflowBackdropCard[data-type='CollectionFolder'] .cardText-first,
+.overflowBackdropCard[data-type='UserView'] .cardText-first {
     display: var(--libraryLabelVisibility);
 }
 
@@ -3801,7 +3967,7 @@ ul.MuiList-root.MuiMenu-list.MuiList-dense > div:first-child {
 }
 
 /* this allows switching between the header styles easily */
-#reactRoot > div:nth-of-type(3) {
+#reactRoot > div:nth-child(3) {
     container-name: skinHeader;
     container-type: size;
     height: var(--appBarHeight);
@@ -3848,9 +4014,16 @@ ul.MuiList-root.MuiMenu-list.MuiList-dense > div:first-child {
     }
 }
 
+.nowPlayingPage {
+    background: linear-gradient(var(--darkerGradientPointAlpha), transparent);
+}
+
 .remoteControlContent {
     padding: 0 var(--sidePadding) !important;
+    background: linear-gradient(transparent, var(--darkerGradientPointAlpha) 20em);
 }
+
+/* performance improvements fot low-end TVs - start */
 
 /* .layout-tv *,
 .layout-tv *::before,
@@ -3873,7 +4046,64 @@ ul.MuiList-root.MuiMenu-list.MuiList-dense > div:first-child {
     display: none !important;
 } */
 
+/* .layout-tv .emby-checkbox:focus + span + .checkboxOutline {
+    transform: scale(1.75);
+} */
+
 .layout-tv .show-focus:focus,
-.layout-tv .show-animation:focus {
+.layout-tv .show-animation:focus,
+.emby-select-focusscale:focus {
     transform: none !important;
 }
+
+.layout-tv .focuscontainer,
+.layout-tv .backdropImage {
+    animation-duration: 0s !important;
+    backdrop-filter: none;
+}
+
+.card.show-animation .cardBox {
+    transition:
+        transform 0.05s ease-out,
+        -webkit-transform 0.05s ease-out;
+}
+
+/* performance improvements fot low-end TVs - end */
+
+/* basic styling for the Media Bar Plugin - start
+for extended styling, use the add-on */
+
+#slides-container {
+    top: calc(-0.5 * var(--appBarHeight));
+}
+
+.backdrop-overlay {
+    background: linear-gradient(
+        var(--lighterGradientPoint),
+        var(--gradientPointAlpha),
+        60%,
+        var(--darkerGradientPointAlpha)
+    );
+}
+
+.plot {
+    color: var(--textColor);
+    text-shadow: 1px 1px var(--lighterGradientPointAlpha);
+}
+
+.button-container {
+    align-items: center;
+}
+
+.favorite-button {
+    background: none;
+    color: var(--textColor);
+}
+
+.detail-button:hover,
+.favorite-button:hover {
+    background: var(--dimTextColor);
+    color: black;
+}
+
+/* basic styling for the Media Bar Plugin - end */
