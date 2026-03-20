@@ -137,8 +137,8 @@
     --headerBackground: var(--headerColorGradient);
 
     /* Login page customization */
-    --loginPageBgUrl: url('');
-    --loginPageText: 'Sign in to continue';
+    --loginPageBgUrl: url('https://files.catbox.moe/l1zsmt.jpg');
+    --loginPageText: 'Sign in to SosaStreams';
 
     /* Overlay and icons */
     --overlayPlayButtonPosition: 2.8em;
